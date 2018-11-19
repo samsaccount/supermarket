@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 	<head>
@@ -8,12 +9,10 @@
         <meta name="keywords" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <meta name="renderer" content="webkit">
-        <meta http-equiv="Cache-Control" content="no-siteapp" />
-        <link rel="icon" type="image/png" href="/theme/default/images/favicon.png">
-		<link href="css/amazeui.min.css" rel="stylesheet" type="text/css" />
-		<link href="css/style.css" rel="stylesheet" type="text/css" />
-		<link href="css/check.css" rel="stylesheet" type="text/css" />
-		<script src="js/jquery-1.10.2.min.js"></script>
+		<link href="{% static 'css/amazeui.min.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" />
+		<script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
+		<script src="{% static 'js/popup.mini.js' %}"></script>
 	</head>
 	<body>
 		<header data-am-widget="header" class="am-header am-header-default sq-head ">
@@ -145,12 +144,12 @@
                 </div>
                 <!--<a href="" class="list-cart"><img src="images/cart.png" width="30"/></a>-->
 	    	</li>
-	    	
+
 	    </ul>
 	    <!--底部-->
  <div style="height: 55px;"></div>
  <div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default sq-foot am-no-layout" id="">
-      <ul class="am-navbar-nav am-cf am-avg-sm-5">   
+      <ul class="am-navbar-nav am-cf am-avg-sm-5">
           <li>
             <a href="index.html" class="">
                 <span class="am-icon-home"></span>
@@ -175,7 +174,7 @@
                 <span class="am-navbar-label">订单</span>
             </a>
           </li>
- 
+
           <li>
             <a href="member.html" class="curr">
                 <span class="am-icon-user"></span>
@@ -197,7 +196,7 @@ $(function(){
 			}
 			self.siblings('input').val(current_num);
 			update_item(self.siblings('input').data('item-id'));
-		})		
+		})
 		$('.decrease').click(function(){
 			var self = $(this);
 			var current_num = parseInt(self.siblings('input').val());
