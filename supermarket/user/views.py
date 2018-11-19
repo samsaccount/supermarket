@@ -1,15 +1,50 @@
 from django.shortcuts import render, redirect
-
+import hashlib
 
 # Create your views here.
 
 # 注册
+from user.forms import userReg, userLogin
+from user.models import User
+
+
 def reg(request):
-    return render(request, "user/reg.html")
+    # 当method为POST的时候验证数据并提交
+    if request.method == "POST":
+        # 获取post中的数据
+        data = request.POST
+        # 创建form对象
+        form = userReg(data)
+        # 验证form是否合法，返回bool指
+        if form.is_valid():
+            # 验证成功，获取form对象清理数据
+            data = form.cleaned_data
+            h = hashlib.md5(data.get("password").encode("utf-8"))
+            password = h.hexdigest()
+            User.objects.create(phone=data.get("phone"), password=password)
+            return redirect("user:login")
+        else:
+            context = {
+                "error":form.errors
+            }
+            return render(request,"user/reg.html",context=context)
+    else:
+        return render(request, "user/reg.html")
 
 
 # 登陆
 def login(request):
+    if request.method == "POST":
+        data = request.POST
+        form = userLogin(data)
+        if form.is_valid():
+            request.session['is_Login'] = True
+            return render(request,"user/member.html")
+        else:
+            context ={
+                "error":form.errors
+            }
+            return render(request,"user/login.html",context=context)
     return render(request, "user/login.html")
 
 
