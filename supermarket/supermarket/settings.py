@@ -28,6 +28,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user.apps.UserConfig',
-    'cart.apps.CartConfig',
+    'apps.cart.apps.CartConfig',
     'order.apps.OrderConfig',
     'goods.apps.GoodsConfig',
 
@@ -68,6 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -90,6 +93,27 @@ DATABASES = {
     }
 }
 
+
+# 配置redis
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+
+# 配置Session_engine
+
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -131,3 +155,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+
+# 文件上传路径
+
+MEDIA_URL = "/static/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
+
