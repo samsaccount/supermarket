@@ -26,60 +26,82 @@
             </h1>
 	    </header>
 	    <div style="height: 49px;"></div>
-	    <ul class="safty1">
-	    	<li>
-	    		<a href="">
-	    			<i style="margin-top: 25px;">头像</i>
-	    			<div class="infor-pic">
-	    				<img src="images/infortx.png" />
-	    			</div>
-	    		</a>
-	    	</li>
-	    	<li>
-	    		<a href="">
-	    			<i>昵称</i>
-	    			<input class="infor-tele" placeholder="默契"/>	    			
-	    		</a>
-	    	</li>
-	    	<li>
-	    		<a href="">
-	    			<i>性别</i>
-	    			<i class="infor-tele">
-	    				<label class="am-radio-inline">
-				          <input type="radio" name="radio10" checked="checked" value="1" data-am-ucheck>男
-				        </label>
-				        <label class="am-radio-inline">
-				          <input type="radio" name="radio10" value="1" data-am-ucheck>女
-				        </label>
-	    			</i>
-	    		</a>
-	    	</li><li>
-	    		<a href="">
-	    			<i>生日</i>
-                    <input class="infor-tele" placeholder="出生日期"/>
-	    		</a>
-	    	</li>
-	    </ul>
-	    <div style="height: 10px; background: #efefef;"></div>
-	     <ul class="safty1">
-	    	<li>
-	    			<i>学校</i>
-	    			<input class="infor-tele" placeholder="就读于哪个学校"/>	    			
-	    	</li>
-	    	<li>
-	    			<i>位置</i>
-	    			<input class="infor-tele" placeholder="详细地址"/>	    			
-	    	</li>
-	    	<li>
-	    			<i>故乡</i>
-                    <input class="infor-tele" placeholder="来自哪里"/>
-	    	</li>
-	    	<li>
-	    			<i>手机</i>
-                    <input class="infor-tele" placeholder="13012345678"/>
-	    	</li>
-	    </ul>
-	    <script src="js/jquery.min.js"></script>
-        <script src="js/amazeui.min.js"></script>
+            <ul class="safty1">
+                <li>
+                    <i style="margin-top: 25px;">头像</i>
+                    <div class="infor-pic">
+                        <img src="{{ MEDIA_URL }}{{ avatar }}" />
+                    </div>
+                    <form action="{% url 'user:upload' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="am-form-group am-form-file">
+                            <i class="am-icon-cloud-upload"></i> 上传头像
+                            <input type="file" class="am-input-group-btn" name="upload" multiple>
+                        </div>
+                         <div class="am-form-group am-form-file">
+                            <button type="submit" class="am-btn am-btn-danger am-radius">提交</button>
+                        </div>
+                    </form>
+                </li>
+            <form action="" method="post">
+            {% csrf_token %}
+                <li>
+                    <i>昵称</i>
+                    <input class="infor-tele" placeholder="昵称" name="nickname" value="{{ nickname }}"/>
+                </li>
+                <li>
+
+                    <i>性别</i>
+                    <i class="infor-tele">
+                        <label class="am-radio-inline">
+                          <input type="radio" name="sex"{% if sex == 1 %}
+                          checked="checked"
+                          {% endif %}  value="1" data-am-ucheck>男
+                        </label>
+                        <label class="am-radio-inline">
+                          <input type="radio" name="sex" {% if sex == 2 %}
+                          checked="checked"
+                          {% endif %} value="2" data-am-ucheck>女
+                        </label>
+                        <label class="am-radio-inline">
+                          <input type="radio" name="sex" {% if sex == 3 %}
+                          checked="checked"
+                          {% endif %} value="3" data-am-ucheck>保密
+                        </label>
+                    </i>
+
+                </li>
+                <li>
+                    <i>生日</i>
+                    <input class="infor-tele" type="date" name="birthday" placeholder="出生日期" value="{{ birthday }}"/>
+                </li>
+{#            </ul>#}
+{#            <div style="height: 10px; background: #efefef;"></div>#}
+{#             <ul class="safty1">#}
+                <li>
+                        <i>学校</i>
+                        <input class="infor-tele" name="school" placeholder="就读于哪个学校" value="{{ school }}"/>
+                </li>
+                <li>
+                        <i>位置</i>
+                        <input class="infor-tele" name="local" placeholder="详细地址" value="{{ local }}"/>
+                </li>
+                <li>
+                        <i>故乡</i>
+                        <input class="infor-tele" name="hometown" placeholder="来自哪里" value="{{ hometown }}"/>
+                </li>
+                <li>
+                        <i>手机</i>
+                        <input class="infor-tele" name="phone" placeholder="手机号码" value="{{ phone }}"/>
+                </li>
+                 <li>
+                     <input type="submit" class="login-btn" value="修改个人资料">
+                 </li>
+            </form>
+            </ul>
+
+
+	    <script src="{% static 'js/jquery.min.js' %}"></script>
+        <script src="{% static 'js/amazeui.min.js' %}"></script>
 	</body>
 </html>
