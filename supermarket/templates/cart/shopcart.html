@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>超市</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <link href="{% static 'css/amazeui.min.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css"/>
+    <script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
+    <script src="{% static 'js/popup.mini.js' %}"></script>
+</head>
+<body>
+<header data-am-widget="header" class="am-header am-header-default sq-head ">
+    <div class="am-header-left am-header-nav">
+        <a href="javascript:history.back()" class="">
+            <i class="am-icon-chevron-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title">
+        <a href="" class="">购物车</a>
+    </h1>
+</header>
+<div style="height: 49px;"></div>
+<form id="cart" action="{% url 'order:confirm_order' %}" method="get">
+
+    {% if goods %}
+        <ul class="shopcart-list">
+            {% for good in goods %}
+                <li>
+                    <label class="am-checkbox am-warning">
+                        <input type="checkbox" checked="checked" name="sku_id" value="{{ good.good.id }}" data-am-ucheck checked>
+                    </label>
+                    <a href="{% url 'goods:detail' good.good.id %}"><img src="{{ MEDIA_URL }}{{ good.good.goods_logo }}"
+                                                                         class="shop-pic"/></a>
+                    <div class="shop-list-mid">
+                        <div class="tit"><a href="{% url 'goods:detail' good.good.id %}">
+                            {{ good.good.goods_spu.goods_spu_name }}{{ good.good.goods_sku_name }}</a></div>
+                        <b class="shop-list-price">￥<span class="price">{{ good.good.goods_price }}</span> </b>
+                    </div>
+                    <div class="list-cart1">
+                        <div class="d-stock">
+                            <a class="decrease">-</a>
+                            <input readonly="" good_id="{{ good.good.id }}" class="text_box num" name="" type="text"
+                                   value="{{ good.count }}">
+                            <a class="increase">+</a>
+                        </div>
+                    </div>
+
+                </li>
+            {% endfor %}
+
+            <div style="height: 2px; background: #eee;"></div>
+        </ul>
+    {% else %}
+        <!--购物车空的状态-->
+        <div class="login-logo">
+            <img src="{% static 'images/care.png' %}">
+            <p>亲、您的购物车还是空空的哦，快去装满它!</p>
+            <a href="{% url 'goods:index' %}" class="goshopping">前去逛逛</a>
+        </div>
+    {% endif %}
+</form>
+{#	    <div style="height: 10px; background: #eee;"></div>#}
+<div class="shop-fix">
+
+    <label class="am-checkbox am-warning">
+        <input id="check_all" type="checkbox" checked="checked" value="" data-am-ucheck checked>
+    </label>
+    <a class="del">全选</a>
+    <a href="javascript:;" class="js-btn">去结算</a>
+    <div class="js-text">
+        <P>合计：￥<b class="total_price">0.00</b></P>
+        <p class="js-car">免费配送</p>
+    </div>
+</div>
+
+<!--底部-->
+<div style="height: 55px;"></div>
+<div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default sq-foot am-no-layout" id="">
+    <ul class="am-navbar-nav am-cf am-avg-sm-5">
+        <li>
+            <a href="{% url 'goods:index' %}" class="">
+                <span class="am-icon-home"></span>
+                <span class="am-navbar-label">首页</span>
+            </a>
+        </li>
+        <li>
+            <a href="../user/message.html" class="">
+                <span class="am-icon-comments"></span>
+                <span class="am-navbar-label">动态</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'cart:cart' %}" class="curr">
+                <span class="am-icon-shopping-cart"></span>
+                <span class="am-navbar-label">购物车</span>
+            </a>
+        </li>
+        <li>
+            <a href="../order/allorder.html" class="">
+                <span class="am-icon-file-text"></span>
+                <span class="am-navbar-label">订单</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{% url 'user:member' %}">
+                <span class="am-icon-user"></span>
+                <span class="am-navbar-label">我的</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+<script>
+    //购物数量加减
+    $(function () {
+        $('.increase').click(function () {
+            var self = $(this);
+            var current_num = parseInt(self.siblings('input').val());
+            current_num += 1;
+            self.siblings('input').val(current_num);
+            var count = 1;
+            var good_id = self.siblings('input').attr("good_id");
+            var context = {
+                "count": count,
+                "good_id": good_id,
+                "csrfmiddlewaretoken": "{{ csrf_token }}"
+            };
+            $.ajax({
+                type: "POST",
+                url: "{% url 'cart:cart_count' %}",
+                dataType: "json",
+                data: context,
+                success: function (data) {
+                    if (data.status == 2) {
+                        console.debug("ok");
+                        totalPrice()
+                    }
+                    else {
+                        console.debug(data.errmsg)
+                    }
+                }
+            });
+            totalPrice()
+        });
+        $('.decrease').click(function () {
+            var self = $(this);
+            var current_num = parseInt(self.siblings('input').val());
+            if (current_num > 0) {
+                current_num -= 1;
+                self.siblings('input').val(current_num);
+            } else {
+                self.parents("li").remove()
+            }
+            if ($(".shopcart-list").find('li').length == 0) {
+                $(".cart_logo").show();
+            }
+            var count = -1;
+            var good_id = self.siblings('input').attr("good_id");
+            var context = {
+                "count": count,
+                "good_id": good_id,
+                "csrfmiddlewaretoken": "{{ csrf_token }}"
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'cart:cart_count' %}",
+                dataType: "json",
+                data: context,
+                success: function (data) {
+                    if (data.status == 2) {
+                        console.debug("ok");
+                        totalPrice()
+                    }
+                    else {
+                        console.debug(data.errmsg)
+                    }
+                }
+            })
+
+    });
+    totalPrice();
+    $('.js-btn').on("click", function () {
+        if ($(".shopcart-list").find(":checked").length > 0) {
+            //提交
+            $("#cart").submit();
+        } else {
+            alert("请选择订单商品!")
+        }
+    });
+    })
+    ;
+    // 一键全选
+    $("#check_all").on("change", function () {
+        var status = $(this).prop("checked");
+        $('.shopcart-list').find(':checkbox').prop("checked", status);
+        totalPrice()
+    });
+    //
+    $(".shopcart-list").find(":checkbox").on("change", function () {
+        totalPrice();
+        if ($(".shopcart-list").find(":checkbox").length == $(".shopcart-list").find(":checked").length) {
+            $("#check_all").prop("checked", true);
+        } else {
+            $("#check_all").prop("checked", false);
+        }
+    });
+
+    // 查询总价格
+    function totalPrice() {
+
+        var checkbox = $(".shopcart-list").find(":checked");
+        var total_price = 0;
+        $.each(checkbox, function (i, e) {
+            var li = $(e).parents("li");
+            var price = li.find(".price").text();
+            var num = li.find(".num").val();
+            console.debug(num);
+            total_price += price * num;
+            console.debug(total_price)
+        });
+        $(".total_price").text(total_price.toFixed(2))
+    }
+
+</script>
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/amazeui.min.js' %}"></script>
+</body>
+</html>

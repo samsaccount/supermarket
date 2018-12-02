@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>超市</title>
+        <meta name="description" content="">
+        <meta name="keywords" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="renderer" content="webkit">
+		<link href="{% static 'css/amazeui.min.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" />
+		<script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
+		<script src="{% static 'js/popup.mini.js' %}"></script>
+	</head>
+	<body>
+		<header data-am-widget="header" class="am-header am-header-default sq-head ">
+			<div class="am-header-left am-header-nav">
+				<a href="javascript:history.back()" class="">
+					<i class="am-icon-chevron-left"></i>
+				</a>
+			</div>
+			<h1 class="am-header-title">
+  	            <a href="" class="">管理收货地址</a>
+            </h1>
+            <div class="am-header-right am-header-nav">
+				<a href="{% url 'order:creat_addr' %}" class="">
+					<i class="am-icon-plus"></i>
+				</a>
+			</div>
+	    </header>
+	    <div style="height: 49px;"></div>
+	    <ul class="address-list">
+            {% for foo in data %}
+                <li addr_id="{{ foo.id }}" {% if foo.isDefault %}
+                class="curr">
+                {% endif %}
+                    <p>收货人：{{ foo.username }}&nbsp;&nbsp;{{ foo.phone }}</p>
+                    <p class="order-add1">收货地址：{{ foo.hcity }}{{ foo.hproper }}{{ foo.harea }}&emsp;{{ foo.brief }}</p>
+                    <hr />
+                    <div class="address-cz">
+                        <label class="am-radio am-warning">
+                           <input type="radio" class="setDefault" name="radio3" data-am-ucheck {% if foo.isDefault %}
+                checked
+                {% endif %}> 设为默认
+                        </label>
+                        <a href="{% url 'order:edit_addr' foo.id %}"><img src="{% static 'images/bj.png' %}" width="18" />&nbsp;编辑</a>
+                        <a href="javascript:;" class="del">删除</a>
+                    </div>
+                </li>
+            {% endfor %}
+
+	    </ul>
+        <script>
+            $(function () {
+                $(".del").on("click",function () {
+                    // 获取父LI标签和当前删除的ID
+                    var li  = $(this).parents("li");
+                    var addr_id = li.attr("addr_id");
+                    $.ajax({
+                        type:"post",
+                        dataType:"json",
+                        data:{"addr_id":addr_id,
+                                "csrfmiddlewaretoken":"{{ csrf_token }}"
+                        },
+                        url:"{% url 'order:addr_del' %}",
+                        success:function (data) {
+                            if(data.status==2){
+                                //li.remove();
+                                location.reload();
+                            }else{
+                                alert(data.errmsg);
+                            }
+                        }
+                    })
+
+                });
+                $(".setDefault").on("click",function () {
+                    var li  = $(this).parents("li");
+                    var addr_id = li.attr("addr_id");
+                    $.ajax({
+                        type:"post",
+                        dataType:"json",
+                        data:{"addr_id":addr_id,
+                                "csrfmiddlewaretoken":"{{ csrf_token }}"
+                        },
+                        url:"{% url 'order:setDefault' %}",
+                        success:function (data) {
+                            if(data.status==2){
+                                //li.remove();
+                                location.reload();
+                            }else{
+                                alert(data.errmsg);
+                            }
+                        }
+                    })
+                })
+            })
+        </script>
+	</body>
+</html>

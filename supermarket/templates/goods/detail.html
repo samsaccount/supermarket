@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 	<head>
@@ -8,14 +9,12 @@
         <meta name="keywords" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <meta name="renderer" content="webkit">
-        <meta http-equiv="Cache-Control" content="no-siteapp" />
-        <link rel="icon" type="image/png" href="/theme/default/images/favicon.png">
-		<link href="css/amazeui.min.css" rel="stylesheet" type="text/css" />
-		<link href="css/style.css" rel="stylesheet" type="text/css" />
-		<script src="js/jquery-1.10.2.min.js"></script>
+		<link href="{% static 'css/amazeui.min.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" />
+		<script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
 		<script>
         	function changeImage(){
-              document.getElementById("imgflag").src="images/redherat.png";
+              document.getElementById("imgflag").src="{% static 'images/redherat.png' %}";
            }
         </script>
 
@@ -40,15 +39,16 @@
 	    <!--图片轮换-->
 		<div class="am-slider am-slider-default" data-am-flexslider id="demo-slider-0">
 		  <ul class="am-slides">
-		    <li><img src="images/pic.png" /></li>
-		    <li><img src="images/pic.png" /></li>
+              {% for foo in sku.goodspic_set.all %}
+              <li><img src="{{ MEDIA_URL }}{{ foo.goods_pic }}" /></li>
+              {% endfor %}
 		  </ul>
 		</div>
 		<div class="detal-info" style="position: relative; width: 100%;">
-			<p>特价武夷山桐木关正山小种红茶高档礼盒</p>
-			<h2>商城价：<span>￥52.00</span></h2>
+			<p>{{ sku.goods_spu.goods_spu_name }}{{ sku.goods_sku_name }}</p>
+			<h2>商城价：<span>￥{{ sku.goods_price }}</span></h2>
 			<div class="heart">
-				<img src="images/herat.png" width="25" id="imgflag" onclick="changeImage()" />
+				<img src="{% static 'images/herat.png' %}" width="25" id="imgflag" onclick="changeImage()" />
 				<p>收藏</p>
 			</div>
 		</div>
@@ -56,8 +56,7 @@
         	<h4>数量：</h4>
             <div class="d-stock">
               <a class="decrease">-</a>
-                <input id="num" readonly="" class="text_box" name="" type="text" value="1">
-                <input id="id" type="hidden" value="644">
+                <input id="num" good_id="{{ sku.id }}" readonly="" class="text_box" name="" type="text" value="1">
                 <a class="increase">+</a>
                <span id="dprice" class="price" style="display:none"> 36</span>
             </div>
@@ -71,10 +70,7 @@
 		
 		  <div class="am-tabs-bd">
 		    <div class="am-tab-panel am-fade am-in am-active detail " id="tab1" >
-		            <p>产地: 中国大陆</p>
-                    <p>功效: 瘦身,美容,提神,抗氧化,保健,降三高</p>
-                    <p>保质期: >2年</p>
-                    <img src="images/test11.png" />
+		            {{ sku.goods_spu.goods_content|safe }}
 		    </div>
 		    <div class="am-tab-panel am-fade detail " id="tab2">
 		         <!--<div class="comment">
@@ -101,7 +97,7 @@
 		         <ul class="comment-pic">
 		         	<li>
 		         		<div class="tit">
-		         			<img src="images/tx.png" class="tx" />
+		         			<img src="{% static 'images/tx.png' %}" class="tx" />
 		         			<span>songke2014</span>
 		         			<i> [2016-01-01]</i>
 		         		</div>
@@ -111,7 +107,7 @@
 		         	</li>
 		         	<li>
 		         		<div class="tit">
-		         			<img src="images/tx.png" class="tx" />
+		         			<img src="{% static 'images/tx.png' %}" class="tx" />
 		         			<span>songke2014</span>
 		         			<i> [2016-01-01]</i>
 		         		</div>
@@ -125,39 +121,69 @@
 		</div>
 		
 		
-		<!--底部-->
- <div style=" height: 55px;"></div>
- <ul class="fix-shopping">
- 	<li><a href="shopcart.html" class="join">加入购物车</a></li>
- 	<li><a href="tureorder.html" class="imm-buy">立即购买</a></li>
- </ul>
- 
- <script>
-	//购物数量加减
-	$(function(){
-		$('.increase').click(function(){
-			var self = $(this);
-			var current_num = parseInt(self.siblings('input').val());
-			current_num += 1;
-			self.siblings('input').val(current_num);
-			update_item(self.siblings('input').data('item-id'));
-		})		
-		$('.decrease').click(function(){
-			var self = $(this);
-			var current_num = parseInt(self.siblings('input').val());
-			if(current_num > 1){
-				current_num -= 1;
-				self.siblings('input').val(current_num);
-				update_item(self.siblings('input').data('item-id'));
-			}
-		})
-	})
+    <!--底部-->
+<div style=" height: 55px;"></div>
+<ul class="fix-shopping">
+    <li><a href="" class="join">加入购物车</a></li>
+    <li><a href="../tureorder.html" class="imm-buy">立即购买</a></li>
+</ul>
+
+<script>
+//购物数量加减
+$(function(){
+    $('.increase').click(function(){
+        var self = $(this);
+        var current_num = parseInt(self.siblings('input').val());
+        current_num += 1;
+        self.siblings('input').val(current_num);
+
+        //update_item(self.siblings('input').data('item-id'));
+    })
+    $('.decrease').click(function(){
+        var self = $(this);
+        var current_num = parseInt(self.siblings('input').val());
+        if(current_num > 1){
+            current_num -= 1;
+            self.siblings('input').val(current_num);
+            //update_item(self.siblings('input').data('item-id'));
+        }
+    })
+})
+//添加购物车ajax
+$(".join").on("click",function () {
+    var num_input = $('#num')
+    var count = num_input.val();
+    var good_id = num_input.attr("good_id")
+    var context = {
+        "count":count,
+        "good_id":good_id,
+        "csrfmiddlewaretoken":"{{ csrf_token }}"
+    }
+    $.ajax({
+        type:"POST",
+        url:"{% url 'cart:cart_count' %}",
+        dataType:"json",
+        data:context,
+        success:function (data){
+            if(data.status == 0){
+                alert(data.errmsg);
+                location.href="{% url 'cart:cart' %}?next={% url 'goods:detail' sku.id %}"
+            }
+            else if(data.status != 2) {
+                alert(data.errmsg);
+            }
+            else {
+                alert("加入购物车成功")
+            }
+        }
+    })
+})
 </script>
- 
- 
- 
- 
-<script src="js/jquery.min.js"></script>
-<script src="js/amazeui.min.js"></script>
-	</body>
+
+
+
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/amazeui.min.js' %}"></script>
+</body>
 </html>

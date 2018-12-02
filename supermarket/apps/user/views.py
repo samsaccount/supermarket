@@ -67,52 +67,13 @@ def login(request):
 
 
 # 个人中心
+@verify_login_required
 def member(request):
     context = {
         "nickname":request.session["nickname"],
         "avatar":request.session["avatar"]
     }
     return render(request, "user/member.html", context=context)
-
-
-# 账户余额
-def records(request):
-    return render(request, "user/records.html")
-
-
-# 积分
-def integral(request):
-    return render(request, "user/integral.html")
-
-
-# 积分兑换
-def integral_exchange(request):
-    return render(request, "user/integralexchange.html")
-
-
-# 兑换记录
-def integral_records(request):
-    return render(request, "user/integralrecords.html")
-
-
-# 优惠卷
-def coupons(request):
-    return render(request, "user/yhq.html")
-
-
-# 过期优惠卷
-def coupons_overtime(request):
-    return render(request, "user/ygq.html")
-
-
-# 收藏
-def collection(request):
-    return render(request, "user/collect.html")
-
-
-# 订单
-def all_order(request):
-    return render(request, "user/allorder.html")
 
 
 # 个人资料
@@ -154,73 +115,3 @@ def UploadImg(request):
     else:
         return redirect("user:user_info")
     # return JsonResponse({"status": "ok", "avatar": str(user.avatar)})
-
-
-# 收获地址
-def set_addr(request):
-    return render(request, "user/gladdress.html")
-
-
-# 安全设置
-def safty(request):
-    return render(request, "user/saftystep.html")
-
-
-# 重置密码
-def reSetPwd(request):
-    return render(request, "user/password.html")
-
-
-# 绑定手机
-def bound_phone(request):
-    return render(request, "user/boundphone.html")
-
-
-# 支付密码
-def payment(request):
-    return render(request, "user/payment.html")
-
-
-# 钱包
-def wallet(request):
-    return render(request, "user/money.html")
-
-
-# 兼职
-def job(request):
-    return render(request, "user/job.html")
-
-
-# 申请记录
-def apply_record(request):
-    return render(request, "user/")
-
-
-# 兼职申请填写
-def apply(request):
-    return render(request, "user/applicationjob.html")
-
-
-# 推荐好友
-def recommend(request):
-    return render(request, "user/recommend.html")
-
-
-# 我的推荐
-def my_recommend(request):
-    return render(request, "user/myrecommend.html")
-
-
-# 动态
-def message(request):
-    return render(request, "user/message.html")
-
-
-# 动态详情
-def messdetail(request):
-    return render(request, "user/messdetail.html")
-
-
-# 发布动态
-def release(request):
-    return render(request, "user/release.html")
