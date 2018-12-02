@@ -1,0 +1,63 @@
+如何在django中使用form
+
+2. 简单form使用实例
+	1. 创建一个form类, 在forms.py中创建
+		自己在应用目录下新建一个文件 forms.py
+
+		from django import forms
+
+		class TodoAddForm(forms.Form):
+		    # 添加类属性 -----> 表示的是 需要验证的表单字段
+		    # 添加类属性 -----> 属性的名字要和表单字段的名字一直
+		    # 属性的类型 必须为 XxxField()
+		    title = forms.CharField(max_length=30, min_length=5)
+		    finish_date = forms.DateField()
+		    content = forms.CharField(max_length=255)
+
+    2. 开始使用form验证
+
+
+    	在 视图函数中 验证:
+    	验证使用模板代码:
+
+    	if request.method == "POST":
+    		# 接收数据
+    		data = request.POST
+    		# 创建form对象
+    		form = XxxForm(data)
+
+    		# 开始验证  is_valid() 是否合法 返回bool
+    		if form.is_valid():
+    			# 处理数据 保存到数据库
+    			data = form.cleaned_data
+    			# 调用模型将数据保存到数据库
+
+    			# 成功
+    			# 跳转
+    		else:
+    			# 错误, 将错误信息显示到页面
+    			context = {
+    				"errors":forms.errors
+    			}
+    			return render(request,"模板路径",context)
+
+    	else:
+    		return render(request,"模板路径")
+
+
+    3. 如果验证失败, 获取错误信息
+        forms.errors属性 ---- > 字典 ---> 获取全部错误信息
+
+
+        如果要获取到某个字段的错误信息:
+        forms.errors['键名'] ----> 得到的是一个ul的错误信息
+
+
+        如果需要获取纯文字的错误信息
+        forms.errors['键名']['索引'] ----> 纯文本错误信息
+
+
+        模板:
+            forms.errors.键名
+            forms.errors.键名.索引
+            forms.errors.键名.0
