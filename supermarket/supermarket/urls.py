@@ -18,8 +18,21 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf.urls.static import static
 
+from goods.views import index
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^$',index),
+    # 上传部件自动调用的上传地址
+    url(r'^ckeditor/', include("ckeditor_uploader.urls")),
+    # 用户模块URL
     url(r'^user/', include("user.urls", namespace="user")),
+    # 商品模块URL
     url(r'^goods/', include("goods.urls", namespace="goods")),
+    # 购物车模块
+    url(r'^cart/', include("cart.urls", namespace="cart")),
+    # 订单模块
+    url(r'^order/', include("order.urls", namespace="order")),
+    # 全文搜索框架
+    url(r'^search/', include('haystack.urls')),
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

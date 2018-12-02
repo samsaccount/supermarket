@@ -13,8 +13,11 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+import sys
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# 将子app的路径添加到系统
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -27,9 +30,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,10 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user.apps.UserConfig',
-    'apps.cart.apps.CartConfig',
-    'order.apps.OrderConfig',
-    'goods.apps.GoodsConfig',
+    'user.apps.UserConfig',  # 用户模块
+    'apps.cart.apps.CartConfig',  # 购物车模块
+    'order.apps.OrderConfig',  # 订单模块
+    'goods.apps.GoodsConfig',  # 商品模块
+    'ckeditor',  # 添加ckeditor富文本编辑器
+    'ckeditor_uploader',  # 添加ckeditor富文本编辑器文件上传部件
+    'haystack',  # 全文检索框架
 
 ]
 
@@ -78,7 +81,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'supermarket.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
@@ -93,7 +95,6 @@ DATABASES = {
     }
 }
 
-
 # 配置redis
 
 
@@ -106,7 +107,6 @@ CACHES = {
         }
     }
 }
-
 
 # 配置Session_engine
 
@@ -133,7 +133,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -147,7 +146,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
@@ -155,10 +153,35 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
-
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # 文件上传路径
 
 MEDIA_URL = "/static/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
 
+# 登陆验证装饰器配置地址
+LOGIN_URL = "/user/login"
+
+# 编辑器样式配置
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+    },
+}
+# 设置富文本
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+# 全文检索框架的配置
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        # 配置搜索引擎
+        # 'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        # 中文分词 使用jieba的whoosh引擎
+        'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
+        # 配置索引文件目录
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+    },
+}
+# 当添加、修改、删除数据时，自动生成索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
